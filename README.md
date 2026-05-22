@@ -22,5 +22,7 @@
 - **数据库**：MySQL
 - **版本控制**：Git + GitHub
 
+---
+
 <img width="1337" height="432" alt="image" src="https://github.com/user-attachments/assets/3935bbe6-00eb-4daa-abed-1072cb51a847" />
 
