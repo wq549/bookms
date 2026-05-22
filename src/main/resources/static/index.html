@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .box{width: 1000px;margin: 20px auto;}
+        table{width:100%;border-collapse:collapse;margin-top:20px;}
+        table,th,td{border:1px solid #ccc;padding:8px;text-align:center;}
+        th{background:#f2f2f2;}
+        input{padding:6px;margin-right:5px;}
+        button{padding:6px 12px;background:#007bff;color:white;border:none;cursor:pointer;}
+        .del{background:red;}
+        .edit{background:orange;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>图书列表</h2>
+    <div>
+        <input type="text" id="name" placeholder="书名">
+        <input type="text" id="author" placeholder="作者">
+        <input type="text" id="publish" placeholder="出版社">
+        <input type="text" id="price" placeholder="价格">
+        <button onclick="addBook()">添加图书</button>
+    </div>
+    <table>
+        <tr>
+            <th>ID</th><th>书名</th><th>作者</th><th>出版社</th><th>价格</th><th>操作</th>
+        </tr>
+        <tbody id="bookList"></tbody>
+    </table>
+</div>
+
+<script>
+    // 页面加载查询所有图书
+    $(function(){
+        findAll();
+    });
+
+    // 查询所有
+    function findAll(){
+        $.get("/book/findAll",function(res){
+            if(res.code === 200){
+                let data = res.data;
+                let html = "";
+                $.each(data,function(index,book){
+                    html += `<tr>
+                        <td>${book.id}</td>
+                        <td>${book.name}</td>
+                        <td>${book.author}</td>
+                        <td>${book.publish}</td>
+                        <td>${book.price}</td>
+                        <td>
+                            <button class="edit" onclick="editBook(${book.id})">修改</button>
+                            <button class="del" onclick="delBook(${book.id})">删除</button>
+                        </td>
+                    </tr>`;
+                });
+                $("#bookList").html(html);
+            }
+        })
+    }
+
+    // 添加图书
+    function addBook() {
+        // 1. 获取并trim
+        let name = $("#name").val().trim();
+        let author = $("#author").val().trim();
+        let publish = $("#publish").val().trim();
+        let priceStr = $("#price").val().trim();
+
+        // 2. 非空简单校验
+        if (!name || !author || !publish) {
+            alert("书名、作者、出版社不能为空！");
+            return;
+        }
+
+        // 3. 价格强校验（核心）
+        let priceReg = /^\d+(\.\d{1,2})?$/; // 整数或最多两位小数
+        if (!priceReg.test(priceStr)) {
+            alert("价格必须是数字!");
+            return;
+        }
+
+        let price = parseFloat(priceStr);
+        if (price <= 0) {
+            alert("价格必须大于0！");
+            return;
+        }
+
+        // 4. 封装对象
+        let book = {
+            name: name,
+            author: author,
+            publish: publish,
+            price: price
+        };
+
+        // 5. 发送Ajax
+        $.ajax({
+            url: "/book/add",
+            type: "post",
+            contentType: "application/json",
+            data: JSON.stringify(book),
+            success: function (res) {
+                if (res.code === 200) {
+                    alert("添加成功！");
+                    findAll();         // 刷新列表
+                    $("input").val("");// 清空输入框
+                } else {
+                    alert("失败：" + res.msg);
+                }
+            }
+        });
+    }
+
+    // 删除图书
+    function delBook(id){
+        if(confirm("确定删除？")){
+            $.get("/book/delete/"+id,function(res){
+                alert(res.msg);
+                findAll();
+            })
+        }
+    }
+
+    // 修改图书（先查询再提交）
+    function editBook(id){
+        $.get("/book/findById/"+id,function(res){
+            let book = res.data;
+            let name = prompt("请输入书名",book.name);
+            let author = prompt("请输入作者",book.author);
+            let publish = prompt("请输入出版社",book.publish);
+            let price = prompt("请输入价格",book.price);
+
+            let updateBook = {id,name,author,publish,price};
+
+            $.ajax({
+                url:"/book/update",
+                type:"post",
+                contentType:"application/json",
+                data:JSON.stringify(updateBook),
+                success:function(res){
+                    alert(res.msg);
+                    findAll();
+                }
+            })
+        })
+    }
+</script>
+</body>
+</html>
