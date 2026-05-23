@@ -9,4 +9,8 @@ public interface BookService {
     void delete(Integer id);
     Book findById(Integer id);
     void update(Book book);
+    int borrowBook(Integer id);
+    int returnBook(Integer id);
+
+    List<Book> searchBookByName(String keyword);
 }

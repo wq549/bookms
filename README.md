@@ -5,6 +5,7 @@
 ---
 
 ## ✨ 功能特性
+
 - **用户登录**：简单的用户认证模块
 - **图书管理**：
   - 新增图书（含前后端双重校验）
@@ -17,6 +18,7 @@
 ---
 
 ## 🛠️ 技术栈
+
 - **后端**：Spring Boot、MyBatis、Maven
 - **前端**：HTML、jQuery、Ajax
 - **数据库**：MySQL
@@ -24,5 +26,6 @@
 
 ---
 
-<img width="1337" height="432" alt="image" src="https://github.com/user-attachments/assets/3935bbe6-00eb-4daa-abed-1072cb51a847" />
+<img title="" src="file:///C:/Users/34979/Pictures/Screenshots/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-05-22%20185024.png" alt="image" width="1337" height="432">
+
 

@@ -22,9 +22,20 @@ public class BookController {
         return Result.success(list);
     }
 
+    @GetMapping("/search")
+    public Result search(@RequestParam String keyword) {
+        List<Book> list = bookService.searchBookByName(keyword);
+        if (list.isEmpty()) {
+            return Result.fail("没有找到相关图书");
+        }
+        return Result.success(list);
+    }
+
     // 添加
     @PostMapping("/add")
     public Result add(@RequestBody @Validated Book book) {
+        // 新增：给图书设置默认状态为“可借”
+        book.setStatus("可借");
         bookService.add(book);
         return Result.success("添加成功");
     }
@@ -48,5 +59,23 @@ public class BookController {
     public Result update(@RequestBody Book book) {
         bookService.update(book);
         return Result.success("修改成功");
+    }
+
+    @PostMapping("/borrow/{id}")
+    public Result borrowBook(@PathVariable Integer id){
+        int count = bookService.borrowBook(id);
+        if(count > 0){
+            return Result.success("借阅成功");
+        }
+        return Result.fail("图书已借出，无法借阅");
+    }
+
+    @PostMapping("/returnBook/{id}")
+    public Result returnBook(@PathVariable Integer id){
+        int count = bookService.returnBook(id);
+        if(count > 0){
+            return Result.success("归还成功");
+        }
+        return Result.fail("图书未借出，无需归还");
     }
 }

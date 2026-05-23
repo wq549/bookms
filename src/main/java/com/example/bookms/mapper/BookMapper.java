@@ -9,6 +9,8 @@ public interface BookMapper {
     // 查询所有图书
     List<Book> findAll();
 
+    List<Book> searchBookByName(String keyword);
+
     // 添加图书
     void add(Book book);
 
@@ -20,4 +22,7 @@ public interface BookMapper {
 
     // 修改图书
     void update(Book book);
+
+    int borrowBook(Integer id);
+    int returnBook(Integer id);
 }

@@ -19,6 +19,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<Book> searchBookByName(String keyword) {
+        return bookMapper.searchBookByName(keyword);
+    }
+    @Override
     public void add(Book book) {
         bookMapper.add(book);
     }
@@ -36,5 +40,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public void update(Book book) {
         bookMapper.update(book);
+    }
+
+    @Override
+    public int borrowBook(Integer id) {
+        return bookMapper.borrowBook(id);
+    }
+    @Override
+    public int returnBook(Integer id) {
+        return bookMapper.returnBook(id);
     }
 }

@@ -7,9 +7,13 @@
         select * from book
     </select>
 
+    <select id="searchBookByName" resultType="com.example.bookms.entity.Book">
+        select * from book where name like concat('%', #{keyword}, '%') or author like concat('%', #{keyword}, '%')
+    </select>
+
     <insert id="add" parameterType="Book">
-        insert into book(name,author,publish,price)
-        values(#{name},#{author},#{publish},#{price})
+        insert into book(name,author,publish,price,status)
+        values(#{name},#{author},#{publish},#{price},#{status})
     </insert>
 
     <delete id="delete" parameterType="int">
@@ -23,5 +27,12 @@
     <update id="update" parameterType="Book">
         update book set name=#{name},author=#{author},publish=#{publish},price=#{price}
         where id=#{id}
+    </update>
+
+    <update id="borrowBook">
+        update book set status = '已借出' where id = #{id} and status = '可借'
+    </update>
+    <update id="returnBook">
+        update book set status = '可借' where id = #{id} and status = '已借出'
     </update>
 </mapper>

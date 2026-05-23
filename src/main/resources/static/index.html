@@ -25,12 +25,21 @@
         <input type="text" id="price" placeholder="价格">
         <button onclick="addBook()">添加图书</button>
     </div>
+    <div style="margin-top:10px;">
+        <input type="text" id="searchName" placeholder="请输入书名或作者名" style="width: 690px; padding:6px;">
+        <button onclick="searchBook()">搜索</button>
+        <button onclick="findAll(); $('#searchName').val('');">重置</button>
+    </div>
     <table>
         <tr>
-            <th>ID</th><th>书名</th><th>作者</th><th>出版社</th><th>价格</th><th>操作</th>
+            <th>ID</th><th>书名</th><th>作者</th><th>出版社</th><th>价格</th><th>状态</th><th>操作</th>
         </tr>
         <tbody id="bookList"></tbody>
     </table>
+    <!-- 退出登录按钮（下方居中） -->
+    <div style="text-align:center; margin-top:30px;">
+        <button onclick="logout()" style="background:#dc3545; padding:8px 20px;">退出登录</button>
+    </div>
 </div>
 
 <script>
@@ -38,6 +47,40 @@
     $(function(){
         findAll();
     });
+
+    // 按书名搜索图书
+    function searchBook() {
+        let keyword = $("#searchName").val().trim();
+        if (!keyword) {
+            alert("请输入要搜索的书名！");
+            return;
+        }
+        $.get("/book/search?keyword=" + keyword, function(res) {
+            if (res.code === 200) {
+                let data = res.data;
+                let html = "";
+                $.each(data, function(index, book) {
+                    html += `<tr>
+                    <td>${book.id}</td>
+                    <td>${book.name}</td>
+                    <td>${book.author}</td>
+                    <td>${book.publish}</td>
+                    <td>${book.price}</td>
+                    <td>${book.status}</td>
+                    <td>
+                        <button class="edit" onclick="editBook(${book.id})">修改</button>
+                        <button class="del" onclick="delBook(${book.id})">删除</button>
+                        <button style="background:#28a745" onclick="borrowBook(${book.id})">借阅</button>
+                        <button style="background:#dc3545" onclick="returnBook(${book.id})">归还</button>
+                    </td>
+                </tr>`;
+                });
+                $("#bookList").html(html);
+            } else {
+                alert("没有找到相关图书");
+            }
+        });
+    }
 
     // 查询所有
     function findAll(){
@@ -52,9 +95,12 @@
                         <td>${book.author}</td>
                         <td>${book.publish}</td>
                         <td>${book.price}</td>
+                        <td>${book.status}</td>
                         <td>
                             <button class="edit" onclick="editBook(${book.id})">修改</button>
                             <button class="del" onclick="delBook(${book.id})">删除</button>
+                            <button style="background:#28a745" onclick="borrowBook(${book.id})">借阅</button>
+                            <button style="background:#dc3545" onclick="returnBook(${book.id})">归还</button>
                         </td>
                     </tr>`;
                 });
@@ -148,6 +194,46 @@
                 }
             })
         })
+    }
+
+    // 借阅图书
+    function borrowBook(id){
+        if(!confirm("确认借阅这本图书？")){
+            return;
+        }
+        $.ajax({
+            url:"/book/borrow/"+id,
+            type:"post",
+            success:function(res){
+                alert(res.msg);
+                findAll();
+            }
+        });
+    }
+    // 归还图书
+    function returnBook(id){
+        if(!confirm("确认归还图书？")){
+            return;
+        }
+        $.ajax({
+            url:"/book/returnBook/"+id,
+            type:"post",
+            success:function(res){
+                alert(res.msg);
+                findAll();
+            }
+        });
+    }
+
+    // 退出登录
+    function logout(){
+        if(confirm("确定退出登录？")){
+            $.post("/logout", function(res){
+                //alert(res.msg);
+                // 跳转登录页
+                location.href = "login.html";
+            });
+        }
     }
 </script>
 </body>

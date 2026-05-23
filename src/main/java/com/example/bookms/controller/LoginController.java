@@ -34,4 +34,10 @@ public class LoginController {
         session.setAttribute("loginUser", user);
         return Result.success(user);
     }
+
+    @PostMapping("/logout")
+    public Result logout(HttpSession session){
+        session.removeAttribute("loginUser");
+        return Result.success("退出登录成功");
+    }
 }
