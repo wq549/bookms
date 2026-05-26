@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图书浏览 - 普通用户</title>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        input[name="keyword"] {
+            width: 300px;
+            padding: 6px;
+        }
+        button {
+            padding: 6px 12px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #e8e8e8;
+        }
+        .btn-borrow {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+        .btn-return {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+        }
+        .msg {
+            text-align: center;
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>图书浏览（可借阅/归还）</h2>
+
+<div class="search-box">
+    <input type="text" id="keyword" placeholder="请输入书名或作者名">
+    <button onclick="searchBook()">搜索</button>
+    <button onclick="loadAllBooks()">重置</button>
+</div>
+
+<div class="msg" id="msg"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>书名</th>
+        <th>作者</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody id="bookTable">
+    <!-- 动态填充 -->
+    </tbody>
+</table>
+
+<script>
+    // 页面加载完自动查所有
+    $(function () {
+        loadAllBooks();
+    });
+
+    // 加载全部图书
+    function loadAllBooks() {
+        $.get("/book/findAll", function (res) {
+            if (res.code === 200) {
+                renderTable(res.data);
+            } else {
+                $("#msg").text("加载失败：" + res.msg);
+            }
+        });
+    }
+
+    // 搜索图书
+    function searchBook() {
+        let keyword = $("#keyword").val().trim();
+        if (!keyword) {
+            $("#msg").text("请输入关键词");
+            return;
+        }
+        $.get("/book/search", { keyword: keyword }, function (res) {
+            if (res.code === 200) {
+                renderTable(res.data);
+                $("#msg").text("");
+            } else {
+                $("#msg").text(res.msg);
+                $("#bookTable").html("");
+            }
+        });
+    }
+
+    // 渲染表格
+    function renderTable(list) {
+        let html = "";
+        list.forEach(book => {
+            html += `<tr>
+                <td>${book.id}</td>
+                <td>${book.name}</td>
+                <td>${book.author}</td>
+                <td>${book.status}</td>
+                <td>`;
+            // 状态判断：可借→显示借阅；已借出→显示归还
+            if (book.status === "可借") {
+                html += `<button class="btn-borrow" onclick="borrowBook(${book.id})">借阅</button>`;
+            } else {
+                html += `<button class="btn-return" onclick="returnBook(${book.id})">归还</button>`;
+            }
+            html += `</td></tr>`;
+        });
+        $("#bookTable").html(html);
+    }
+
+    // 借阅
+    function borrowBook(id) {
+        $.post("/book/borrow/" + id, function (res) {
+            alert(res.msg);
+            loadAllBooks(); // 刷新列表
+        });
+    }
+
+    // 归还
+    function returnBook(id) {
+        $.post("/book/returnBook/" + id, function (res) {
+            alert(res.msg);
+            loadAllBooks();
+        });
+    }
+</script>
+
+</body>
+</html>

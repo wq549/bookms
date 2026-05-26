@@ -60,8 +60,15 @@
         }
         $.post("/login", {username, password}, function (res) {
             if (res.code === 200) {
-                // 登录成功，直接跳转到主页面
-                location.href = "/index.html";
+                // 后端返回的 user 对象里有 role
+                let role = res.data.role;
+                if (role === "admin") {
+                    // 管理员跳转到管理界面（带增删改查）
+                    location.href = "/index.html";
+                } else {
+                    // 普通用户跳转到个人界面（只能看/改自己的信息）
+                    location.href = "/user-index.html";
+                }
             } else {
                 alert(res.msg);
             }

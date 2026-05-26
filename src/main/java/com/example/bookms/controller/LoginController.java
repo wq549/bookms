@@ -32,6 +32,7 @@ public class LoginController {
 
         // 登录成功，把用户信息存入session
         session.setAttribute("loginUser", user);
+        session.setAttribute("role", user.getRole()); // 关键：把角色也存进去
         return Result.success(user);
     }
 

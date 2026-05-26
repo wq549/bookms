@@ -10,9 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
-                // 拦截所有图书接口
-                .addPathPatterns("/book/**")
-                // 放行登录接口
-                .excludePathPatterns("/login");
+                .addPathPatterns("/**") // 所有请求都走拦截器
+                .excludePathPatterns("/login", "/login.html"); // 登录相关放行
     }
 }

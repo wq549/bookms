@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .container {width: 400px;margin: 100px auto;padding: 20px;border: 1px solid #ccc;}
+        .info-item {margin: 15px 0;}
+        button {padding: 8px 16px;background: #007bff;color: white;border: none;cursor: pointer;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>个人中心</h2>
+    <div class="info-item">用户名：<span id="username"></span></div>
+    <div class="info-item">角色：<span id="role"></span></div>
+    <hr>
+    <button onclick="logout()">退出登录</button>
+</div>
+
+<script>
+    // 页面加载时获取当前登录用户信息
+    $(function () {
+        $.get("/user/info", function (res) {
+            if (res.code === 200) {
+                $("#username").text(res.data.username);
+                $("#role").text(res.data.role === "admin" ? "管理员" : "普通用户");
+            }
+        });
+    });
+
+    function logout() {
+        $.post("/logout", function () {
+            location.href = "/login.html";
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        /* 整体布局 */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        /* 左侧菜单 */
+        .sidebar {
+            width: 200px;
+            background: #2f4050;
+            color: #fff;
+        }
+        .sidebar h3 {
+            text-align: center;
+            padding: 30px 0;
+            color: #ccc;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+        }
+        .sidebar ul li:hover {
+            background: #1ab394;
+        }
+        .sidebar ul li.active {
+            background: #18a085;
+        }
+        /* 右侧内容区 iframe */
+        .content {
+            flex: 1;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 左侧菜单 -->
+    <div class="sidebar">
+        <h3>用户功能菜单</h3>
+        <ul>
+            <li class="active" data-url="user-center.html">个人中心</li>
+            <li data-url="user-book.html">图书浏览</li>
+            <li data-url="user-record.html">借阅记录</li>
+        </ul>
+    </div>
+
+    <!-- 右侧嵌入页面 -->
+    <div class="content">
+        <iframe id="mainIframe" src="user-center.html"></iframe>
+    </div>
+</div>
+
+<script>
+    // 菜单点击跳转页面
+    $(".sidebar li").click(function(){
+        // 切换选中样式
+        $(".sidebar li").removeClass("active");
+        $(this).addClass("active");
+        // 获取地址，修改iframe src 实现页面跳转
+        let url = $(this).data("url");
+        $("#mainIframe").attr("src", url);
+    });
+</script>
+</body>
+</html>
